@@ -5,16 +5,17 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import random
 from io import BytesIO
 import base64
 import folium
 from streamlit_folium import folium_static
+from streamlit.components.v1 import html
 
 # Set page config
 st.set_page_config(
-    page_title="Waste Management Dashboard",
+    page_title="OASYS Dashboard",
     page_icon="♻️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -23,46 +24,100 @@ st.set_page_config(
 # Apply custom CSS for better styling
 st.markdown("""
 <style>
-    .main {
-        background-color: #f5f7f9;
-    }
-    .block-container {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-    h1, h2, h3 {
-        color: #2c3e50;
-    }
-    .stMetric {
-        background-color: white;
-        padding: 15px;
-        border-radius: 5px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .card {
-        background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-    }
-    .success-story {
-        padding: 15px;
-        border-radius: 10px;
-        background-color: #f0f9ff;
-        margin-bottom: 15px;
-    }
-    .testimonial {
-        font-style: italic;
-        border-left: 4px solid #3498db;
-        padding-left: 10px;
-    }
-    .tips-card {
-        background-color: #e8f4ea;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-    }
+ .main {
+ background-color: #f5f7f9;
+ }
+ .block-container {
+ padding-top: 1rem;
+ padding-bottom: 1rem;
+ }
+ h1, h2, h3 {
+ color: #2c3e50;
+ }
+ .stMetric {
+ background-color: white;
+ padding: 15px;
+ border-radius: 5px;
+ box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+ }
+ .card {
+ background-color: white;
+ padding: 20px;
+ border-radius: 10px;
+ box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+ margin-bottom: 20px;
+ }
+ .success-story {
+ padding: 15px;
+ border-radius: 10px;
+ background-color: #f0f9ff;
+ margin-bottom: 15px;
+ }
+ .testimonial {
+ font-style: italic;
+ border-left: 4px solid #3498db;
+ padding-left: 10px;
+ }
+ .tips-card {
+ background-color: #e8f4ea;
+ padding: 15px;
+ border-radius: 10px;
+ margin-bottom: 15px;
+ }
+ .explainer-box {
+ display: flex;
+ flex-direction: row;
+ flex-wrap: wrap;
+ gap: 1rem;
+ margin-bottom: 20px;
+ border: 2px dashed red;
+ }
+ }
+ .explainer-image {
+ width: 150px;
+ height: 150px;
+ border-radius: 10px;
+ margin-right: 20px;
+ object-fit: cover;
+ }
+ .explainer-text {
+ flex: 1;
+ }
+ .explainer-section {
+ display: flex;
+ flex-direction: row;
+ flex-wrap: wrap;
+ gap: 1rem;
+ align-items: center;
+ margin-bottom: 15px;
+ border: 2px dashed blue;
+ }
+ .explainer-icon {
+ font-size: 2.5em;
+ margin-right: 15px;
+ color: #3498db;
+ }
+ .sidebar-brand {
+ font-size: 24px;
+ font-weight: bold;
+ text-align: center;
+ padding: 10px;
+ margin-bottom: 20px;
+ background-color: #e8f4ea;
+ border-radius: 5px;
+ }
+ .sidebar-brand-subtitle {
+ font-size: 12px;
+ text-align: center;
+ margin-top: -15px;
+ margin-bottom: 20px;
+ font-style: italic;
+ }
+.full-width-map {
+width: 100% !important;
+height: 500px !important;
+border: 2px solid red;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -81,11 +136,12 @@ def generate_demo_data():
     ]
     
     # Generate waste collection data
-    today = datetime.now()
+    today = datetime(2025, 4, 18)  # Set to match the current date
     dates = [today - timedelta(days=x) for x in range(90)]
     
-    waste_types = ["Organik", "Plastik", "Kertas", "Logam", "Kaca", "Elektronik", "B3", "Lainnya"]
-    
+    # Simplified waste types as requested
+    waste_types = ["Organik", "Recycle-able"]
+
     waste_collection_data = []
     
     for date in dates:
@@ -98,14 +154,8 @@ def generate_demo_data():
                 
                 # Base weights for different waste types
                 base_weights = {
-                    "Organik": 40,
-                    "Plastik": 20,
-                    "Kertas": 15,
-                    "Logam": 5,
-                    "Kaca": 8,
-                    "Elektronik": 3,
-                    "B3": 2,
-                    "Lainnya": 7
+                    "Organik": 60,
+                    "Recycle-able": 40
                 }
                 
                 # Calculate weight
@@ -194,6 +244,15 @@ def generate_demo_data():
 df, bins_df, users_df, geo_data, kecamatan_list = generate_demo_data()
 
 # ----- SIDEBAR -----
+st.sidebar.markdown("""
+<div class="sidebar-brand">
+    OASYS
+</div>
+<div class="sidebar-brand-subtitle">
+    Optimized Automated System for Sustainable Waste
+</div>
+""", unsafe_allow_html=True)
+
 st.sidebar.title("Filter Data")
 
 # Date filter
@@ -239,7 +298,8 @@ if not selected_kecamatan and not selected_waste_types:
 # ----- MAIN DASHBOARD -----
 
 # Header
-st.title("♻️ Dashboard Pengelolaan Sampah Jakarta")
+st.title("♻️ OASYS - Dashboard Pengelolaan Sampah Jakarta")
+st.markdown("*Optimized Automated System for Sustainable Waste*")
 
 # Explainer text
 with st.expander("Mengapa Pengelolaan Sampah Penting?", expanded=True):
@@ -258,18 +318,16 @@ with st.expander("Mengapa Pengelolaan Sampah Penting?", expanded=True):
     """, unsafe_allow_html=True)
 
 # Key metrics
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3 = st.columns(3)
 
 # Calculate metrics
 total_waste = df_filtered['weight_kg'].sum()
 distributed_waste = df_filtered[df_filtered['status'] == 'Disalurkan']['weight_kg'].sum()
 total_active_bins = bins_df['active_bins'].sum()
-full_bins_percentage = int((bins_df['full_bins'].sum() / bins_df['active_bins'].sum()) * 100)
 
 col1.metric("Total Sampah Diterima", f"{total_waste:,.2f} kg")
 col2.metric("Total Sampah Disalurkan", f"{distributed_waste:,.2f} kg", f"{(distributed_waste/total_waste*100):.1f}%")
 col3.metric("Tempat Sampah Aktif", f"{total_active_bins:,}")
-col4.metric("Tempat Sampah Penuh", f"{full_bins_percentage}%")
 
 # Create two rows for main content
 row1_col1, row1_col2 = st.columns([2, 1])
@@ -300,14 +358,14 @@ with row1_col1:
         # Scale the radius based on weight
         radius = np.sqrt(weight) * 20
         
-        # Scale color based on weight
+        # Scale color based on weight - REVERSED as requested (large=green, small=red)
         # Create bins for color mapping
         max_weight = waste_per_kecamatan['weight_kg'].max()
         normalized_weight = weight / max_weight
         
-        # Color ranges from green (low) to red (high)
-        r = int(255 * normalized_weight)
-        g = int(255 * (1 - normalized_weight))
+        # Color ranges from red (low) to green (high) - REVERSED from original
+        r = int(255 * (1 - normalized_weight))
+        g = int(255 * normalized_weight)
         b = 0
         
         color = f'#{r:02x}{g:02x}{b:02x}'
@@ -333,7 +391,13 @@ with row1_col1:
         ).add_to(m)
     
     # Display the map
-    folium_static(m)
+    # folium_static(m)
+    # st.markdown('<div class="full-width-map">', unsafe_allow_html=True)
+    # folium_static(m)
+    html(m.get_root().render(), height=500, width=0)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
     st.markdown("</div>", unsafe_allow_html=True)
 
 with row1_col2:
@@ -341,9 +405,12 @@ with row1_col2:
     
     # Calculate impact metrics
     organik_weight = df_filtered[df_filtered['waste_type'] == 'Organik']['weight_kg'].sum()
-    plastik_weight = df_filtered[df_filtered['waste_type'] == 'Plastik']['weight_kg'].sum()
-    kertas_weight = df_filtered[df_filtered['waste_type'] == 'Kertas']['weight_kg'].sum()
-    logam_weight = df_filtered[df_filtered['waste_type'] == 'Logam']['weight_kg'].sum()
+    recyclable_weight = df_filtered[df_filtered['waste_type'] == 'Recycle-able']['weight_kg'].sum()
+    
+    # Assuming recyclable is a mix of plastic (50%), paper (30%), and metal (20%)
+    plastik_weight = recyclable_weight * 0.5
+    kertas_weight = recyclable_weight * 0.3
+    logam_weight = recyclable_weight * 0.2
     
     # CO2 saved calculations
     co2_organik = organik_weight * 0.5  # 0.5 kg CO₂ per kg organic waste
@@ -415,18 +482,51 @@ with row2_col1:
     
     st.markdown("<div class='card'><h3>Tren Volume Sampah per Jenis</h3>", unsafe_allow_html=True)
     
-    # Prepare data
+    # Prepare data for trend analysis
+    # Fix the resample error by converting the date to datetime if needed
     daily_waste = df_filtered.groupby(['date', 'waste_type'])['weight_kg'].sum().reset_index()
     
-    # Pivot to get waste types as columns
-    daily_waste_pivot = daily_waste.pivot(index='date', columns='waste_type', values='weight_kg').fillna(0)
-    daily_waste_pivot = daily_waste_pivot.resample('W').sum()  # Weekly resampling for cleaner visualization
+    # Convert to proper datetime if needed
+    daily_waste['date'] = pd.to_datetime(daily_waste['date'])
     
-    # Plot
-    fig = px.area(
-        daily_waste_pivot,
-        color_discrete_sequence=px.colors.qualitative.Set3,
+    # Create a pivot table for easier plotting
+    waste_pivot = daily_waste.pivot(index='date', columns='waste_type', values='weight_kg').fillna(0)
+    
+    # Group by week without resample (to avoid errors)
+    waste_by_week = []
+    
+    # Get the list of unique weeks
+    weekly_dates = sorted(list(set([d.isocalendar()[1] for d in daily_waste['date']])))
+    
+    for week in weekly_dates:
+        # Filter for this week
+        week_data = daily_waste[daily_waste['date'].apply(lambda x: x.isocalendar()[1] == week)]
+        
+        # Group by waste type and sum
+        for waste_type in waste_types:
+            week_sum = week_data[week_data['waste_type'] == waste_type]['weight_kg'].sum()
+            # Use the first date in this week
+            first_date = week_data['date'].min()
+            
+            waste_by_week.append({
+                'date': first_date,
+                'week': week,
+                'waste_type': waste_type,
+                'weight_kg': week_sum
+            })
+    
+    weekly_waste_df = pd.DataFrame(waste_by_week)
+    
+    # Plot the trend
+    fig = px.line(
+        weekly_waste_df, 
+        x='date', 
+        y='weight_kg', 
+        color='waste_type',
+        markers=True,
+        color_discrete_sequence=px.colors.qualitative.Safe
     )
+    
     fig.update_layout(
         xaxis_title="Tanggal",
         yaxis_title="Berat (kg)",
@@ -483,14 +583,12 @@ with row3_col1:
     stories = [
         {
             "title": "Bank Sampah Berseri",
-            "image": "https://via.placeholder.com/800x400",
             "content": "Kelompok Bank Sampah Berseri berhasil mengolah sampah plastik menjadi tas dan aksesori yang kini dipasarkan secara online. Pendapatan dari penjualan meningkat 200% dalam 6 bulan terakhir.",
-            "testimonial": "Sistem pengelolaan sampah ini membantu kami mendapatkan pasokan bahan baku yang konsisten dan berkualitas untuk produk kami.",
+            "testimonial": "Sistem pengelolaan sampah OASYS membantu kami mendapatkan pasokan bahan baku yang konsisten dan berkualitas untuk produk kami.",
             "author": "Ibu Siti, Koordinator Bank Sampah Berseri"
         },
         {
             "title": "Kompos Makmur",
-            "image": "https://via.placeholder.com/800x400",
             "content": "Komunitas pertanian urban 'Kompos Makmur' menggunakan pupuk organik dari sampah organik yang dikumpulkan. Hasil panen sayuran mereka meningkat hingga 30% sejak menggunakan pupuk dari sampah organik.",
             "testimonial": "Kualitas pupuk dari sampah organik yang terkelola dengan baik sangat membantu kami menghasilkan sayuran organik berkualitas tinggi.",
             "author": "Pak Joko, Ketua Komunitas Kompos Makmur"
@@ -512,34 +610,34 @@ with row3_col1:
     
     st.markdown("</div>", unsafe_allow_html=True)
 
+
 with row3_col2:
     st.markdown("<div class='card'><h3>Prediksi Volume Sampah</h3>", unsafe_allow_html=True)
     
     # Prepare data for prediction visualization
-    # In a real app, this would use actual ML models
     dates = df['date'].sort_values().unique()
     daily_totals = df.groupby('date')['weight_kg'].sum().reset_index()
     
+    # Get the last date from historical data
+    last_date = dates[-1]  # Using the date directly
+    
     # Create future dates for prediction
-    last_date = dates[-1]
     future_dates = [last_date + timedelta(days=i) for i in range(1, 31)]
     
-    # Create a simple trend-based prediction (this is very simplified)
-    # In production, you'd use proper time series forecasting
+    # Create a simple trend-based prediction
     avg_daily = daily_totals['weight_kg'].mean()
     std_daily = daily_totals['weight_kg'].std()
     
     # Trend factor
     trend = 0.002  # Slight upward trend
-    
     future_predictions = []
+    
     for i, date in enumerate(future_dates):
         # Add some seasonality
         day_of_week = date.weekday()
         seasonal_factor = 1.0
         if day_of_week >= 5:  # Weekend
             seasonal_factor = 1.2
-            
         predicted_value = avg_daily * (1 + trend * i) * seasonal_factor
         future_predictions.append({
             'date': date,
@@ -548,58 +646,78 @@ with row3_col2:
         })
     
     # Convert historical data
-    historical_data = [{'date': row['date'], 'weight_kg': row['weight_kg'], 'type': 'Historis'} 
+    historical_data = [{'date': row['date'], 'weight_kg': row['weight_kg'], 'type': 'Historis'}
                       for _, row in daily_totals.iterrows()]
     
     # Combine datasets
     prediction_df = pd.DataFrame(historical_data + future_predictions)
     
+    # Make sure date column is datetime type
+    prediction_df['date'] = pd.to_datetime(prediction_df['date'])
+    
     # Plot
     fig = px.line(
-        prediction_df, 
-        x='date', 
-        y='weight_kg', 
+        prediction_df,
+        x='date',
+        y='weight_kg',
         color='type',
-        line_dash='type',
-        color_discrete_map={'Historis': 'blue', 'Prediksi': 'red'}
+        title='Proyeksi Volume Sampah 30 Hari ke Depan',
+        labels={'date': 'Tanggal', 'weight_kg': 'Volume (kg)', 'type': 'Data'},
+        color_discrete_map={'Historis': '#1f77b4', 'Prediksi': '#ff7f0e'}
     )
+    
+    # Improve layout
     fig.update_layout(
-        xaxis_title="Tanggal",
-        yaxis_title="Berat Total (kg)",
-        margin=dict(t=0, b=0, l=0, r=0),
-        legend_title="Data Type"
+        legend_title_text='',
+        hovermode='x unified',
+        plot_bgcolor='rgba(0,0,0,0)',
+        margin=dict(l=20, r=20, t=40, b=20),
+        xaxis_type='date'
     )
     
-    # Add confidence interval for prediction (simplified)
-    dates_for_ci = future_dates
-    upper_bound = [row['weight_kg'] * 1.15 for row in future_predictions]
-    lower_bound = [row['weight_kg'] * 0.85 for row in future_predictions]
-    
-    fig.add_trace(
-        go.Scatter(
-            x=dates_for_ci + dates_for_ci[::-1],
-            y=upper_bound + lower_bound[::-1],
-            fill='toself',
-            fillcolor='rgba(255,0,0,0.1)',
-            line=dict(color='rgba(255,0,0,0)'),
-            showlegend=False,
-            name='Confidence Interval'
-        )
+    # Add a vertical line using shapes instead of add_vline
+    fig.update_layout(
+        shapes=[
+            dict(
+                type="line",
+                xref="x",
+                yref="paper",
+                x0=last_date,
+                y0=0,
+                x1=last_date,
+                y1=1,
+                line=dict(
+                    color="gray",
+                    width=1,
+                    dash="dash",
+                )
+            )
+        ],
+        annotations=[
+            dict(
+                x=last_date,
+                y=1,
+                xref="x",
+                yref="paper",
+                text="Mulai Prediksi",
+                showarrow=False,
+                xanchor="right"
+            )
+        ]
     )
     
+    # Display in Streamlit
     st.plotly_chart(fig, use_container_width=True)
     
-    # Predicted growth
-    avg_current = daily_totals.iloc[-7:]['weight_kg'].mean()
-    avg_prediction = sum([p['weight_kg'] for p in future_predictions[:7]]) / 7
-    growth_pct = (avg_prediction / avg_current - 1) * 100
+    # Add some explanation
+    st.markdown("""
+    <div style='font-size:0.9em;color:#666;'>
+    * Prediksi menggunakan tren historis dengan peningkatan 0.2% per hari
+    * Volume sampah pada akhir pekan cenderung 20% lebih tinggi
+    </div>
+    """, unsafe_allow_html=True)
     
-    st.metric(
-        "Prediksi Rata-rata Harian (7 Hari Ke Depan)", 
-        f"{avg_prediction:.2f} kg", 
-        f"{growth_pct:.1f}%"
-    )
-    
+    # Close the card div
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ROW 4: Tips and Data Table
@@ -612,9 +730,7 @@ with row4_col1:
     st.markdown("""
     <div class="tips-card">
         <h4>📦 Sampah Minggu Ini: Botol Plastik</h4>
-        
         <p><b>Tahukah kamu?</b> Satu botol plastik membutuhkan 450 tahun untuk terurai di alam.</p>
-        
         <p><b>Tips:</b></p>
         <ul>
             <li>Cuci dan keringkan sebelum membuang</li>
@@ -629,7 +745,6 @@ with row4_col1:
     st.markdown("""
     <div class="tips-card">
         <h4>💡 Tips Umum</h4>
-        
         <p><b>Cara Memilah Sampah di Rumah:</b></p>
         <ul>
             <li><span style="color:green"><b>Hijau</b></span> - Sampah organik (sisa makanan, daun)</li>
@@ -643,13 +758,20 @@ with row4_col1:
 
 with row4_col2:
     st.markdown("<div class='card'><h3>Data Pengambilan Sampah</h3>", unsafe_allow_html=True)
-    
-    # Create a copy and format for display
+
+    # ✅ Convert ke datetime dulu (fix utama)
     display_df = df_filtered.copy()
+    display_df['date'] = pd.to_datetime(display_df['date'], errors='coerce')
+
+    # ✅ Drop baris yang gagal dikonversi
+    display_df = display_df.dropna(subset=['date'])
+
+    # ✅ Format tanggal
     display_df['date'] = display_df['date'].dt.strftime('%d-%m-%Y')
-    
-    # Select relevant columns and rename
+
+    # Ambil kolom yang diperlukan
     display_df = display_df[['date', 'time', 'kecamatan', 'waste_type', 'weight_kg', 'status']]
     display_df.columns = ['Tanggal', 'Waktu', 'Kecamatan', 'Jenis Sampah', 'Berat (kg)', 'Status']
-    
-    # Sort by date (newest first
+
+    # Tampilkan tabel
+    st.dataframe(display_df.sort_values(by='Tanggal', ascending=False), use_container_width=True)
