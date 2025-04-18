@@ -89,28 +89,25 @@ h1, h2, h3, h4 {
     line-height: 1.6;
 }
             
-.success-story {
-    background-color: #fff3cd;
-    border-left: 4px solid #FFC107;
+ .success-story {
     padding: 15px;
     border-radius: 12px;
+    background-color: #f0f9ff;
     margin-bottom: 15px;
-}
-
-.testimonial {
+ }
+            
+ .testimonial {
     font-style: italic;
-    color: #6c757d;
-    border-left: 4px solid #FFA500;
+    border-left: 4px solid #3498db;
     padding-left: 12px;
-}
-
-.tips-card {
-    background-color: #fff8e1;
+ }
+            
+ .tips-card {
+    background-color: #e8f4ea;
     padding: 15px;
     border-radius: 12px;
-    border-left: 6px solid #FFD700;
     margin-bottom: 15px;
-}
+ }
 
 ul li::marker {
     color: #FF8C00;
