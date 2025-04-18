@@ -24,102 +24,123 @@ st.set_page_config(
 # Apply custom CSS for better styling
 st.markdown("""
 <style>
- .main {
- background-color: #f5f7f9;
- }
- .block-container {
- padding-top: 1rem;
- padding-bottom: 1rem;
- }
- h1, h2, h3 {
- color: #2c3e50;
- }
- .stMetric {
- background-color: white;
- padding: 15px;
- border-radius: 5px;
- box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
- }
- .card {
- background-color: white;
- padding: 20px;
- border-radius: 10px;
- box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
- margin-bottom: 20px;
- }
- .success-story {
- padding: 15px;
- border-radius: 10px;
- background-color: #f0f9ff;
- margin-bottom: 15px;
- }
- .testimonial {
- font-style: italic;
- border-left: 4px solid #3498db;
- padding-left: 10px;
- }
- .tips-card {
- background-color: #e8f4ea;
- padding: 15px;
- border-radius: 10px;
- margin-bottom: 15px;
- }
- .explainer-box {
- display: flex;
- flex-direction: row;
- flex-wrap: wrap;
- gap: 1rem;
- margin-bottom: 20px;
- border: 2px dashed red;
- }
- }
- .explainer-image {
- width: 150px;
- height: 150px;
- border-radius: 10px;
- margin-right: 20px;
- object-fit: cover;
- }
- .explainer-text {
- flex: 1;
- }
- .explainer-section {
- display: flex;
- flex-direction: row;
- flex-wrap: wrap;
- gap: 1rem;
- align-items: center;
- margin-bottom: 15px;
- border: 2px dashed blue;
- }
- .explainer-icon {
- font-size: 2.5em;
- margin-right: 15px;
- color: #3498db;
- }
- .sidebar-brand {
- font-size: 24px;
- font-weight: bold;
- text-align: center;
- padding: 10px;
- margin-bottom: 20px;
- background-color: #e8f4ea;
- border-radius: 5px;
- }
- .sidebar-brand-subtitle {
- font-size: 12px;
- text-align: center;
- margin-top: -15px;
- margin-bottom: 20px;
- font-style: italic;
- }
-.full-width-map {
-width: 100% !important;
-height: 500px !important;
-border: 2px solid red;
+/* -- WARNA & TEMA UMUM -- */
+body, .main, .block-container {
+    background-color: #FFFDF5;
+    font-family: 'Poppins', sans-serif;
+    color: #2C3E50;
 }
+
+/* -- HEADER UTAMA -- */
+h1, h2, h3, h4 {
+    color: #FF8C00;
+    font-weight: 700;
+}
+
+/* -- SIDEBAR -- */
+[data-testid="stSidebar"] {
+    background-color: #FFF3CD;
+    color: #D35400;
+}
+
+[data-testid="stSidebar"] .sidebar-content {
+    padding: 2rem 1rem;
+}
+
+.sidebar-brand {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    background-color: #FFEB99;
+    border-radius: 8px;
+    color: #FF8C00;
+    margin-bottom: 5px;
+}
+
+.sidebar-brand-subtitle {
+    font-size: 16px;
+    text-align: center;
+    font-style: italic;
+    color: #FF8C00;
+    # color: #e67e22;
+    margin-bottom: 20px;
+}
+
+/* -- METRICS / ANGKA BESAR -- */
+.stMetric {
+    background-color: #FFF8E1;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.1);
+    color: #FF8C00;
+    text-align: left;
+}
+
+/* -- KONTEN UTAMA -- */
+.card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    border-left: 6px solid #FFA500;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.07);
+    margin-bottom: 20px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+            
+.success-story {
+    background-color: #fff3cd;
+    border-left: 4px solid #FFC107;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.testimonial {
+    font-style: italic;
+    color: #6c757d;
+    border-left: 4px solid #FFA500;
+    padding-left: 12px;
+}
+
+.tips-card {
+    background-color: #fff8e1;
+    padding: 15px;
+    border-radius: 12px;
+    border-left: 6px solid #FFD700;
+    margin-bottom: 15px;
+}
+
+ul li::marker {
+    color: #FF8C00;
+}
+
+/* -- MAP & KOMPONEN FULL WIDTH -- */
+.full-width-map {
+    width: 100% !important;
+    height: 500px !important;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #FFA500;
+}
+
+/* -- TOOLTIP/INPUT SELECT -- */
+.css-1d391kg {
+    color: #2C3E50 !important;
+    font-size: 14px !important;
+
+.cc {
+    background-color: #e8f4ea;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
 </style>
 """, unsafe_allow_html=True)
+
+
 
 # ----- FUNCTIONS FOR DATA GENERATION -----
 
@@ -299,10 +320,30 @@ if not selected_kecamatan and not selected_waste_types:
 
 # Header
 st.title("♻️ OASYS - Dashboard Pengelolaan Sampah Jakarta")
-st.markdown("*Optimized Automated System for Sustainable Waste*")
+st.markdown('<p style="font-size:24px; color:#FF8C00; font-style:italic;">Optimized Automated System for Sustainable Waste</p>', unsafe_allow_html=True)
 
+#  background-color: #ffffff;
+#     
+#     
+#     
+#     
+#     margin-bottom: 20px;
+#     font-size: 16px;
+#     line-height: 1.6;
 # Explainer text
-with st.expander("Mengapa Pengelolaan Sampah Penting?", expanded=True):
+st.markdown("""
+    <style>
+    /* Style khusus untuk semua expander judul */
+    .streamlit-expanderHeader {
+        font-family: 'Segoe UI';
+        font-size: 20px;
+        font-weight: 700;
+        color: #2C3E50;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+with st.expander("Mengapa Pengelolaan Sampah Penting?"):
     st.markdown("""
     <div class="card">
         <h3>Dampak Sampah di Jakarta</h3>
